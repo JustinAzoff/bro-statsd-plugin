@@ -9,7 +9,7 @@ plugin::Configuration Plugin::Configure()
 	{
 	plugin::Configuration config;
 	config.name = "NCSA::Statsd";
-	config.description = "<Insert description>";
+	config.description = "Client for incrementing counters in statsd";
 	config.version.major = 1;
 	config.version.minor = 0;
 	return config;
