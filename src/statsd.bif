@@ -1,27 +1,29 @@
 function statsd_increment%(s: string, c: count%): any
    %{
-    int sock;
-    struct sockaddr_in server;
+    static int sock = -1;
+    static struct sockaddr_in server;
     int slen=sizeof(server);
     char stat_buffer[1024];
+    if (sock == -1) {
 
-    memset((char *) &server, 0, sizeof(server));
-    server.sin_family = AF_INET;
-    server.sin_port = htons(8125);
-    if (inet_aton("127.0.0.1", &server.sin_addr)==0)
-        {
-        builtin_error("Can't initialize Statsd server address");
-        return 0;
-        }
-    if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP)) == -1)
-        {
-        builtin_error("Can't initialize Statsd socket");
-        return 0;
-        }
+        memset((char *) &server, 0, sizeof(server));
+        server.sin_family = AF_INET;
+        server.sin_port = htons(8125);
+        if (inet_aton("127.0.0.1", &server.sin_addr)==0)
+            {
+            builtin_error("Can't initialize Statsd server address");
+            return 0;
+            }
+        if((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP)) == -1)
+            {
+            builtin_error("Can't initialize Statsd socket");
+            return 0;
+            }
+    }
 
     snprintf(stat_buffer, 1024, "%s:%d|c", s->CheckString(), uint32(c));
     sendto(sock, stat_buffer, strlen(stat_buffer), 0, (struct sockaddr*)&server, slen);
     // printf("sent stat: %s\n", stat_buffer);
-    close(sock);
+    //close(sock);
     return 0;
     %}
