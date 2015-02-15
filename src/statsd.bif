@@ -4,6 +4,7 @@ function statsd_increment%(s: string, c: count%): any
     static struct sockaddr_in server;
     int slen=sizeof(server);
     char stat_buffer[1024];
+    int length;
     if (sock == -1) {
 
         memset((char *) &server, 0, sizeof(server));
@@ -21,8 +22,8 @@ function statsd_increment%(s: string, c: count%): any
             }
     }
 
-    snprintf(stat_buffer, 1024, "%s:%d|c", s->CheckString(), uint32(c));
-    sendto(sock, stat_buffer, strlen(stat_buffer), 0, (struct sockaddr*)&server, slen);
+    length = snprintf(stat_buffer, 1024, "%s:%d|c", s->CheckString(), uint32(c));
+    sendto(sock, stat_buffer, length, 0, (struct sockaddr*)&server, slen);
     // printf("sent stat: %s\n", stat_buffer);
     //close(sock);
     return 0;
